@@ -1,7 +1,17 @@
-import 'package:flutter/material.dart';
 
-class DoctorsScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import '../model/doctor_model.dart';
+import 'doctor_details_screen.dart';
+
+class DoctorsScreen extends StatefulWidget {
   DoctorsScreen({super.key});
+
+  @override
+  State<DoctorsScreen> createState() => _DoctorsScreenState();
+}
+
+class _DoctorsScreenState extends State<DoctorsScreen> {
+  final TextEditingController searchController = TextEditingController();
 
   final List<Map<String, dynamic>> doctors = [
     {
@@ -10,6 +20,9 @@ class DoctorsScreen extends StatelessWidget {
       'experience': '8 years experience',
       'fee': '₹500',
       'icon': Icons.favorite,
+      'qualification': 'MBBS, MD Cardiology',
+      'availableDays': 'Monday to Saturday',
+      'availableTime': '10:00 AM - 2:00 PM',
     },
     {
       'name': 'Dr. Priya Patil',
@@ -17,6 +30,9 @@ class DoctorsScreen extends StatelessWidget {
       'experience': '6 years experience',
       'fee': '₹400',
       'icon': Icons.face,
+      'qualification': 'MBBS, MD Dermatology',
+      'availableDays': 'Monday to Friday',
+      'availableTime': '11:00 AM - 3:00 PM',
     },
     {
       'name': 'Dr. Amit Deshmukh',
@@ -24,6 +40,9 @@ class DoctorsScreen extends StatelessWidget {
       'experience': '10 years experience',
       'fee': '₹600',
       'icon': Icons.accessibility_new,
+      'qualification': 'MBBS, MS Orthopedic',
+      'availableDays': 'Monday to Saturday',
+      'availableTime': '9:00 AM - 1:00 PM',
     },
     {
       'name': 'Dr. Sneha Joshi',
@@ -31,8 +50,26 @@ class DoctorsScreen extends StatelessWidget {
       'experience': '5 years experience',
       'fee': '₹350',
       'icon': Icons.child_care,
+      'qualification': 'MBBS, MD Pediatrics',
+      'availableDays': 'Monday to Friday',
+      'availableTime': '10:00 AM - 4:00 PM',
     },
   ];
+
+  List<Map<String, dynamic>> get filteredDoctors {
+    String search = searchController.text.toLowerCase().trim();
+
+    return doctors.where((doctor) {
+      return doctor['name'].toLowerCase().contains(search) ||
+          doctor['speciality'].toLowerCase().contains(search);
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +86,20 @@ class DoctorsScreen extends StatelessWidget {
           ),
           SizedBox(height: 16),
           TextField(
+            controller: searchController,
+            onChanged: (value) {
+              setState(() {});
+            },
             decoration: InputDecoration(
               hintText: 'Search doctors or speciality',
               prefixIcon: Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {
+                  searchController.clear();
+                  setState(() {});
+                },
+              ),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -61,7 +109,22 @@ class DoctorsScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20),
-          ...doctors.map((doctor) {
+
+          if (filteredDoctors.isEmpty)
+            Center(
+              child: Padding(
+                padding: EdgeInsets.all(30),
+                child: Text(
+                  'No doctors found',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+
+          ...filteredDoctors.map((doctor) {
             return Card(
               margin: EdgeInsets.only(bottom: 14),
               elevation: 1,
@@ -120,7 +183,26 @@ class DoctorsScreen extends StatelessWidget {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Doctor selectedDoctor = Doctor(
+                                  name: doctor['name'],
+                                  specialization: doctor['speciality'],
+                                  qualification: doctor['qualification'],
+                                  experience: doctor['experience'],
+                                  availableDays: doctor['availableDays'],
+                                  availableTime: doctor['availableTime'],
+                                );
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DoctorDetailsScreen(
+                                      doctor: selectedDoctor,
+                                    ),
+                                  ),
+                                );
+                              },
                               child: Text('View Details'),
                             ),
                           ),

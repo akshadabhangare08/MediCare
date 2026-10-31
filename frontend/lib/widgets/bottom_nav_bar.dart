@@ -1,9 +1,10 @@
+
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 import '../screens/appointments_screen.dart';
 import '../screens/records_screen.dart';
 import '../screens/profile_screen.dart';
-
+import '../screens/doctors_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   final String token;
@@ -28,9 +29,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     _screens = [
       HomeScreen(token: widget.token),
+      DoctorsScreen(),
       AppointmentsScreen(token: widget.token),
       RecordsScreen(token: widget.token),
-      ProfileScreen(token: widget.token)
+      ProfileScreen(token: widget.token),
     ];
   }
 
@@ -54,6 +56,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home_rounded),
             label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.medical_services_outlined),
+            selectedIcon: Icon(Icons.medical_services),
+            label: 'Doctors',
           ),
           NavigationDestination(
             icon: Icon(Icons.calendar_month_outlined),
